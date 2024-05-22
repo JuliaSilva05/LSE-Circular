@@ -1,0 +1,197 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct node {
+  struct node *prox;
+  int info;
+} Node;
+
+typedef struct lseCirc {
+  Node *inicio;
+  Node *fim;
+  int qtd;
+} LSECirc;
+
+void inicializar(LSECirc *lista) {
+  lista->inicio = NULL;
+  lista->qtd = 0;
+  lista->fim = NULL;
+}
+
+int isEmpty(LSECirc lista) {
+  if ((lista.inicio == NULL) && (lista.fim == NULL) && (lista.qtd == 0)) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+void exibirOpcoes() {
+  printf("\n1 - Add\n");
+  printf("2 - Remover\n");
+  printf("3 - Exibir\n");
+}
+
+Node *criarNo(int num) {
+  Node *aux;
+  aux = (Node *)malloc(sizeof(Node));
+  aux->info = num;
+  aux->prox = NULL;
+  return aux;
+}
+
+void inserirOrdenado(LSECirc *lista, int num) {
+  if (isEmpty(*lista) == 1) {
+    Node *novo = criarNo(num);
+    lista->inicio = novo;
+    lista->fim = novo;
+    lista->qtd++;
+    novo->prox = lista->inicio;
+  } else {
+    if (num <= lista->inicio->info) {
+      Node *novo = criarNo(num);
+      novo->prox = lista->inicio;
+      lista->inicio = novo;
+      lista->fim->prox = lista->inicio;
+      lista->qtd++;
+      printf("%d no inicio\n", lista->inicio->info);
+    } else if (num > lista->fim->info) {
+      Node *novo = criarNo(num);
+      lista->fim->prox = novo;
+      lista->fim = novo;
+      novo->prox = lista->inicio;
+      lista->qtd++;
+      printf("%d no fim\n", lista->fim->info);
+    } else {
+      printf("ola ");
+      Node *aux = lista->inicio->prox;
+      Node *ant = lista->inicio;
+      while (aux != lista->inicio) {
+        if (num <= aux->info) {
+          Node *novo = criarNo(num);
+          novo->prox = aux;
+          ant->prox = novo;
+          lista->qtd++;
+          printf("%d no meio\n", novo->info);
+          break;
+        } else {
+          ant = aux;
+          aux = aux->prox;
+          printf("na ");
+        }
+        printf("hey ");
+      }
+    }
+  }
+}
+
+void exibir(LSECirc lista) {
+  Node *aux = lista.inicio;
+  printf("\nLista:\n");
+  do {
+    printf("%d, ", aux->info);
+    aux = aux->prox;
+  } while (aux != lista.inicio);
+  printf("\n%d\n", lista.qtd);
+}
+
+void removerInicio(LSECirc *lista) {
+  Node *aux;
+  if (isEmpty(*lista) == 1) {
+    printf("Lista vazia!\n");
+  } else {
+    if (lista->qtd == 1) {
+      free(lista->inicio);
+      lista->inicio = NULL;
+      lista->fim = NULL;
+      lista->qtd = 0;
+    } else {
+      Node *aux = lista->inicio;
+      lista->inicio = lista->inicio->prox;
+      lista->fim->prox = lista->inicio;
+      aux->prox = NULL;
+      lista->qtd--;
+    }
+  }
+  
+}
+
+int remover(LSECirc *lista, int valor) {
+
+  int cont = 0;
+  Node *aux, *anterior;
+  if (isEmpty(*lista) == 1) {
+    return 0;
+  } else if (lista->inicio->info == valor) {
+    while (isEmpty(*lista) == 0 && lista->inicio->info == valor) {
+      removerInicio(lista);
+      cont++;
+      printf("mah-oe\n");
+    }
+  } 
+  else {
+    aux = lista->inicio->prox;
+    anterior = lista->inicio;
+    printf("jj ");
+    do {
+      if (aux->info == valor) {
+        if (aux == lista->fim) {
+          printf("final ");
+          lista->fim = anterior;
+          lista->fim->prox = lista->inicio;
+          lista->qtd--;
+          cont++;
+          break;
+        } else {
+          anterior->prox = aux->prox;
+          free(aux);
+          aux = anterior->prox;
+          cont++;
+          printf("ha ");
+          lista->qtd--;
+        }
+      } else {
+        anterior = aux;
+        aux = aux->prox;
+      }
+    } while (aux != lista->inicio);
+  }
+
+  return cont;
+
+  
+}
+
+int main(void) {
+  int num, op;
+  LSECirc lista;
+  inicializar(&lista);
+
+  do {
+    exibirOpcoes();
+    scanf("%d", &op);
+    switch (op) {
+    case 1:
+      printf("Digite um número: ");
+      scanf("%d", &num);
+      inserirOrdenado(&lista, num);
+      break;
+    case 2:
+      printf("Digite um número: ");
+      scanf("%d", &num);
+      printf("\n%d '%d's removido(s)\n", remover(&lista, num), num);
+
+    case 3:
+      if (isEmpty(lista) == 1) {
+        printf("Lista vazia!\n");
+      } else {
+        exibir(lista);
+      }
+
+      break;
+    }
+  } while (op != 0);
+
+  return 0;
+}
